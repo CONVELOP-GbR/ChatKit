@@ -69,6 +69,7 @@ public class MessagesListAdapter<MESSAGE extends IMessage>
     private MessagesListStyle messagesListStyle;
     private DateFormatter.Formatter dateHeadersFormatter;
     private SparseArray<OnMessageViewClickListener> viewClickListenersArray = new SparseArray<>();
+    private AvatarClickListener avatarClickListener;
 
     /**
      * For default list item layout and view holder.
@@ -108,7 +109,9 @@ public class MessagesListAdapter<MESSAGE extends IMessage>
                 getMessageClickListener(wrapper),
                 getMessageLongClickListener(wrapper),
                 dateHeadersFormatter,
-                viewClickListenersArray);
+                viewClickListenersArray,
+                getAvatarClickListener(wrapper)
+        );
     }
 
     @Override
@@ -441,6 +444,10 @@ public class MessagesListAdapter<MESSAGE extends IMessage>
         unselectAllItems();
     }
 
+    public void setOnAvatarClickListener(AvatarClickListener avatarClickListener) {
+        this.avatarClickListener = avatarClickListener;
+    }
+
     /**
      * Sets click listener for item. Fires ONLY if list is not in selection mode.
      *
@@ -593,6 +600,14 @@ public class MessagesListAdapter<MESSAGE extends IMessage>
         }
     }
 
+    private void notifyAvatarClicked(String avatarPath) {
+        if (avatarPath.isEmpty() || avatarClickListener == null) {
+            return;
+        }
+
+        avatarClickListener.onAvatarClicked(avatarPath);
+    }
+
     private void notifyMessageClicked(MESSAGE message) {
         if (onMessageClickListener != null) {
             onMessageClickListener.onMessageClick(message);
@@ -631,6 +646,13 @@ public class MessagesListAdapter<MESSAGE extends IMessage>
                 notifyMessageClicked(wrapper.item);
                 notifyMessageViewClicked(view, wrapper.item);
             }
+        };
+    }
+
+    private View.OnClickListener getAvatarClickListener(final Wrapper<MESSAGE> wrapper) {
+        return view -> {
+            MESSAGE message = (wrapper.item);
+            notifyAvatarClicked(message.getUser().getAvatar());
         };
     }
 
@@ -706,6 +728,10 @@ public class MessagesListAdapter<MESSAGE extends IMessage>
          * @param totalItemsCount current items count.
          */
         void onLoadMore(int page, int totalItemsCount);
+    }
+
+    public interface AvatarClickListener {
+        void onAvatarClicked(String avatarPath);
     }
 
     /**

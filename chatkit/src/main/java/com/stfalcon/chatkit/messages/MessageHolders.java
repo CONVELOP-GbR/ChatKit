@@ -569,13 +569,22 @@ public class MessageHolders {
                         final View.OnClickListener onMessageClickListener,
                         final View.OnLongClickListener onMessageLongClickListener,
                         final DateFormatter.Formatter dateHeadersFormatter,
-                        final SparseArray<MessagesListAdapter.OnMessageViewClickListener> clickListenersArray) {
+                        final SparseArray<MessagesListAdapter.OnMessageViewClickListener> clickListenersArray,
+                        final View.OnClickListener avatarClickListener) {
 
         if (item instanceof IMessage) {
             ((MessageHolders.BaseMessageViewHolder) holder).isSelected = isSelected;
             ((MessageHolders.BaseMessageViewHolder) holder).imageLoader = imageLoader;
             holder.itemView.setOnLongClickListener(onMessageLongClickListener);
             holder.itemView.setOnClickListener(onMessageClickListener);
+
+            if (holder instanceof BaseIncomingMessageViewHolder) {
+                ImageView userAvatar = ((BaseIncomingMessageViewHolder<IMessage>) holder).userAvatar;
+
+                if (userAvatar != null) {
+                    userAvatar.setOnClickListener(avatarClickListener);
+                }
+            }
 
             for (int i = 0; i < clickListenersArray.size(); i++) {
                 final int key = clickListenersArray.keyAt(i);
