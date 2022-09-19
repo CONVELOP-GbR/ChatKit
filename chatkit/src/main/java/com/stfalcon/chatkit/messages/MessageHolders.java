@@ -870,6 +870,7 @@ public class MessageHolders {
 
         protected ImageView image;
         protected View imageOverlay;
+        protected TextView text;
 
         @Deprecated
         public IncomingImageMessageViewHolder(View itemView) {
@@ -887,6 +888,12 @@ public class MessageHolders {
             super.onBind(message);
             if (image != null && imageLoader != null) {
                 imageLoader.loadImage(image, message.getImageUrl(), getPayloadForImageLoader(message));
+            }
+
+            if (text != null) {
+                String username = message.getUser().getName();
+                String formattedTime = DateFormatter.format(message.getCreatedAt(), DateFormatter.Template.TIME);
+                time.setText(String.format("%s - %s", username, formattedTime));
             }
 
             if (imageOverlay != null) {
@@ -920,6 +927,7 @@ public class MessageHolders {
         private void init(View itemView) {
             image = itemView.findViewById(R.id.image);
             imageOverlay = itemView.findViewById(R.id.imageOverlay);
+            text = itemView.findViewById(R.id.messageTime);
 
             if (image instanceof RoundedImageView) {
                 ((RoundedImageView) image).setCorners(
@@ -1063,7 +1071,9 @@ public class MessageHolders {
         @Override
         public void onBind(MESSAGE message) {
             if (time != null) {
-                time.setText(DateFormatter.format(message.getCreatedAt(), DateFormatter.Template.TIME));
+                String username = message.getUser().getName();
+                String formattedTime = DateFormatter.format(message.getCreatedAt(), DateFormatter.Template.TIME);
+                time.setText(String.format("%s - %s", username, formattedTime));
             }
 
             if (userAvatar != null) {
