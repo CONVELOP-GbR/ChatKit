@@ -1,49 +1,81 @@
-apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
+}
 
 def githubProperties = new Properties()
 githubProperties.load(new FileInputStream(rootProject.file("github.properties")))
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion '29.0.3'
+    namespace "com.stfalcon.chatkit"
+    compileSdkVersion 35
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 21
+        targetSdkVersion 35
         versionCode 1
         versionName '0.4.8'
         consumerProguardFiles 'proguard.txt'
-    }
-    android {
-        lintOptions {
-            abortOnError false
-        }
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
     }
 }
 
-
 task sourceJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs, android.sourceSets.release.java.srcDirs
-    archiveClassifier = "sources"
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier.set("sources")
 }
 
 afterEvaluate {
     publishing {
         publications {
-            // Creates a Maven publication called "release".
-            releaseAndroidLibrary(MavenPublication) {
-                // Applies the component for the release build variant.
+            release(MavenPublication) {
                 from components.release
 
-                // You can then customize attributes of the publication as shown below.
                 groupId = 'com.github.stfalcon'
                 artifactId = 'chatkit'
-                version = '0.4.12'
+                version = '0.4.18'
+
+                pom {
+                    name = 'ChatKit'
+                    description = 'Android library for chat UI implementation'
+                    url = 'https://github.com/CONVELOP-GbR/ChatKit'
+
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'stfalcon'
+                            name = 'Stfalcon'
+                        }
+                    }
+
+                    scm {
+                        connection = 'scm:git:github.com/CONVELOP-GbR/ChatKit.git'
+                        developerConnection = 'scm:git:ssh://github.com/CONVELOP-GbR/ChatKit.git'
+                        url = 'https://github.com/CONVELOP-GbR/ChatKit/tree/main'
+                    }
+                }
             }
         }
 
@@ -63,8 +95,16 @@ afterEvaluate {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'androidx.appcompat:appcompat:1.5.0'
-    implementation 'com.google.android.material:material:1.6.1'
-    implementation "com.google.android.flexbox:flexbox:3.0.0"
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    // AndroidX
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.recyclerview:recyclerview:1.3.1'
+
+    // Flexbox
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
+
+    // Testing
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }

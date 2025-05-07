@@ -249,15 +249,10 @@ public class MessageInput extends RelativeLayout
 
             final Object drawableFieldOwner;
             final Class<?> drawableFieldClass;
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                drawableFieldOwner = this.messageInput;
-                drawableFieldClass = TextView.class;
-            } else {
-                final Field editorField = TextView.class.getDeclaredField("mEditor");
-                editorField.setAccessible(true);
-                drawableFieldOwner = editorField.get(this.messageInput);
-                drawableFieldClass = drawableFieldOwner.getClass();
-            }
+            final Field editorField = TextView.class.getDeclaredField("mEditor");
+            editorField.setAccessible(true);
+            drawableFieldOwner = editorField.get(this.messageInput);
+            drawableFieldClass = drawableFieldOwner.getClass();
             final Field drawableField = drawableFieldClass.getDeclaredField("mCursorDrawable");
             drawableField.setAccessible(true);
             drawableField.set(drawableFieldOwner, new Drawable[]{drawable, drawable});

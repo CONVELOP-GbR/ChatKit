@@ -25,6 +25,8 @@
         android:layout_toLeftOf="@id/sendButtonSpace"
         android:layout_toRightOf="@id/attachmentButtonSpace"
         android:layout_toStartOf="@id/sendButtonSpace"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
         android:inputType="textAutoCorrect|textAutoComplete|textMultiLine|textCapSentences" />
 
     <Space
